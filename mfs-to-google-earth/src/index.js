@@ -1,12 +1,11 @@
 const fs = require('fs');
 const path = require('path');
-const { parse } = require('csv-parse/sync');
 const chalk = require('chalk');
 
+const parse = require('./parse.js');
+const transformers = require('./transformers/index.js');
 const log = require('./utils/log.js');
 const formatNumber = require('./utils/format.js');
-
-const transformers = require('./transformers/index.js');
 
 const DATA_PATH = '../data/Export 2022-05-28-00-15.csv';
 
@@ -17,12 +16,12 @@ main();
 
 function main() {
   log('main', `Start reading ${chalk.blue.bold(DATA_PATH)}`);
-  const rawData = fs.readFileSync(path.resolve(__dirname, DATA_PATH));
-  
-  log('main', `Parsing data of size ${formatNumber(rawData.length)} bytes`);
-  const records = parse(rawData, {
-    columns: true,
+  const rawData = fs.readFileSync(path.resolve(__dirname, DATA_PATH), {
+    encoding: 'utf-8',
   });
+
+  log('main', `Parsing data of size ${formatNumber(rawData.length)} bytes`);
+  const records = parse(rawData);
   printSample(records);
 
   const kml = applyTransformers(records);

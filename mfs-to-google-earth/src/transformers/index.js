@@ -1,12 +1,12 @@
 /**
  * Transformer protocol:
- * 
+ *
  * {
  *   transformEach(data, index, dataset) {
  *     return <transformed data, or null / undefined for removing the data point>;
  *   },
  *   transform(dataset) {
- *     return <transformed - new dataset, morePasses: boolean - true to require more passes>;
+ *     return <transformed dataset>;
  *   }
  * }
  */
