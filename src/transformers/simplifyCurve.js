@@ -155,7 +155,7 @@ function angle(vec1, vec2) {
   const mag1 = magnitude(vec1);
   const mag2 = magnitude(vec2);
 
-  if (mag1 === 0 || mag2 === 0) {
+  if (mag1 < EPSILON || mag2 < EPSILON) {
     // Zero vectors have the same direction with any other vectors
     return 0;
   }
