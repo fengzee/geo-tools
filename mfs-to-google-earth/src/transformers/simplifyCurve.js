@@ -77,9 +77,9 @@ module.exports = {
     return this._drop('no other rule is hit');
   },
 
-  transform(dataset) {
+  transform(input) {
     log(this.name, this._stats);
-    return dataset;
+    return input;
   },
 
   _take(data, reason) {

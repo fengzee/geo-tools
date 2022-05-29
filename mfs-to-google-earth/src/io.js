@@ -6,23 +6,20 @@ const inquirer = require('inquirer');
 const log = require('./utils/log.js');
 const formatNumber = require('./utils/format.js');
 
-const DEFAULT_INPUT_DIRECTORY = '../data';
-const DEFAULT_OUTPUT_DIRECTORY = '../output';
-
 const INPUT_EXTENSION = '.csv';
 const OUTPUT_EXTENSION = '.kml';
 
 module.exports = {
   selectAndReadInput,
   writeOutput,
+  cleanUpInput,
 }
 
 async function selectAndReadInput(options) {
-  const inputRelative = options.input || DEFAULT_INPUT_DIRECTORY;
-  const inputDirectory = path.resolve(__dirname, inputRelative);
+  const inputDirectory = _inputDirectory(options.input);
 
   if (!fs.existsSync(inputDirectory)) {
-    log('main', `Input directory ${chalk.yellow.bold(inputDirectory)} does NOT exist`);
+    log('io', `Input directory ${chalk.yellow.bold(inputDirectory)} does NOT exist`);
     process.exit(1);
   }
 
@@ -30,12 +27,12 @@ async function selectAndReadInput(options) {
     .readdirSync(inputDirectory)
     .filter((file) => file.endsWith('.csv'));
   if (!inputFiles.length) {
-    log('main', `Input directory ${chalk.yellow.bold(inputDirectory)} is does not contain "*.csv" files`);
+    log('io', `Input directory ${chalk.yellow.bold(inputDirectory)} is does not contain "*.csv" files`);
     process.exit(1);
   }
 
   const inputInfos = inputFiles.map((inputFile) => {
-    const { outputPath } = _outputPath(options.output || DEFAULT_OUTPUT_DIRECTORY, inputFile);
+    const { outputPath } = _outputPath(options.output, inputFile);
     return {
       inputFile,
       hasOutput: fs.existsSync(outputPath),
@@ -59,11 +56,11 @@ async function selectAndReadInput(options) {
   }]);
 
   if (!selectedInputs.length) {
-    log('main', `No input to process`);
+    log('io', `No input to process`);
   }
 
   return selectedInputs.map((inputFile) => {
-    log('main', `Start reading ${chalk.blue.bold(inputFile)}`);
+    log('io', `Start reading ${chalk.blue.bold(inputFile)}`);
     return {
       inputFile,
       rawData: fs.readFileSync(path.resolve(inputDirectory, inputFile), {
@@ -76,7 +73,7 @@ async function selectAndReadInput(options) {
 function writeOutput(outputDirectory, correspondingInput, kml) {
   const { outputDirectoryRelative, outputPath } = _outputPath(outputDirectory, correspondingInput);
 
-  log('main', `Writing transformed KML (${formatNumber(kml.length)} bytes) to ${chalk.green.bold(outputPath)}`);
+  log('io', `Writing transformed KML (${formatNumber(kml.length)} bytes) to ${chalk.green.bold(outputPath)}`);
   try {
     fs.mkdirSync(path.resolve(__dirname, outputDirectoryRelative));
   } catch (_) {
@@ -84,8 +81,18 @@ function writeOutput(outputDirectory, correspondingInput, kml) {
   fs.writeFileSync(outputPath, kml);
 }
 
+function cleanUpInput(inputDirectory, inputFile) {
+  const inputFullPath = path.resolve(_inputDirectory(inputDirectory), inputFile);
+  log('io', `Clean up ${chalk.yellow.bold(inputFullPath)}`);
+  fs.rmSync(inputFullPath);
+}
+
+function _inputDirectory(inputDirectory) {
+  return path.resolve(__dirname, inputDirectory);
+}
+
 function _outputPath(outputDirectory, correspondingInput) {
-  const outputDirectoryRelative = outputDirectory || DEFAULT_OUTPUT_DIRECTORY;
+  const outputDirectoryRelative = outputDirectory;
   const outputFileName = correspondingInput.replace(INPUT_EXTENSION, OUTPUT_EXTENSION);
   const outputPath = path.resolve(__dirname, outputDirectoryRelative, outputFileName);
 

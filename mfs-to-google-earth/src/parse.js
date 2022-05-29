@@ -1,5 +1,5 @@
 module.exports = function parse(csv) {
-  const lines = csv.split('\r\n');
+  const lines = csv.split('\n');
   const columns = lines[0].split(',');
 
   return lines.slice(1).map((line) => {

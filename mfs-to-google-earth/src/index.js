@@ -1,18 +1,22 @@
 const { program } = require('commander');
 const chalk = require('chalk');
 
-const { selectAndReadInput, writeOutput } = require('./io.js');
+const { selectAndReadInput, writeOutput, cleanUpInput } = require('./io.js');
 const parse = require('./parse.js');
 const transformers = require('./transformers/index.js');
 const log = require('./utils/log.js');
 const formatNumber = require('./utils/format.js');
 
+const DEFAULT_INPUT_DIRECTORY = '../data';
+const DEFAULT_OUTPUT_DIRECTORY = '../output';
+
 main();
 
 async function main() {
   program
-    .option('-i, --input <string>', 'input directory')
-    .option('-o, --output <string>', 'output directory')
+    .option('-i, --input <string>', 'input directory', DEFAULT_INPUT_DIRECTORY)
+    .option('-o, --output <string>', 'output directory', DEFAULT_OUTPUT_DIRECTORY)
+    .option('-c, --clean', 'clean input file when done', false)
     .parse();
   const options = program.opts();
 
@@ -20,18 +24,23 @@ async function main() {
   inputs.forEach(({ inputFile, rawData }) => {
     console.log('----');
     log('main', `Parsing ${chalk.blue.bold(inputFile)} data of size ${formatNumber(rawData.length)} bytes`);
-    const records = parse(rawData);
+    const input = { meta: { inputFile }, dataset: parse(rawData) };
 
-    const kml = applyTransformers(records);
+    const { dataset: kml } = applyTransformers(input);
 
     // Output file shares the same name with its corresponding input
     writeOutput(options.output, inputFile, kml);
+    if (options.clean) {
+      cleanUpInput(options.input, inputFile);
+    }
   });
 
   console.log(`----\n${chalk.green.bold('Done')}`);
 }
 
-function applyTransformers(dataset) {
+function applyTransformers(input) {
+  const { meta, dataset } = input;
+
   transformers.forEach((transformer) => {
     log('main', `Transforming with transformer ${transformer.name}`);
 
@@ -53,16 +62,17 @@ function applyTransformers(dataset) {
       // Remove marked data points
       if (hasRemoval) {
         const before = dataset.length;
-        dataset = dataset.filter((record) => !record._markedForRemoval);
+        const datasetAfterRemoval = dataset.filter((record) => !record._markedForRemoval);
         const after = dataset.length;
         log(transformer.name, `Removed ${formatNumber(before - after)} data points (${before} -> ${after})`);
+        input = { meta, dataset: datasetAfterRemoval };
       }
     }
 
     // Transforme the whole dataset
     if (transformer.transform) {
-      dataset = transformer.transform(dataset);
+      input = transformer.transform(input);
     }
   });
-  return dataset;
+  return input;
 }
