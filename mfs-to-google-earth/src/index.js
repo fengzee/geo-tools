@@ -1,40 +1,34 @@
-const fs = require('fs');
-const path = require('path');
+const { program } = require('commander');
 const chalk = require('chalk');
 
+const { selectAndReadInput, writeOutput } = require('./io.js');
 const parse = require('./parse.js');
 const transformers = require('./transformers/index.js');
 const log = require('./utils/log.js');
 const formatNumber = require('./utils/format.js');
 
-const DATA_PATH = '../data/Export 2022-05-29-05-22.csv';
-
-const OUTPUT_DIRECTORY = '../output';
-const OUTPUT_FILE = 'Flight Path.kml';
-
 main();
 
-function main() {
-  log('main', `Start reading ${chalk.blue.bold(DATA_PATH)}`);
-  const rawData = fs.readFileSync(path.resolve(__dirname, DATA_PATH), {
-    encoding: 'utf-8',
+async function main() {
+  program
+    .option('-i, --input <string>', 'input directory')
+    .option('-o, --output <string>', 'output directory')
+    .parse();
+  const options = program.opts();
+
+  const inputs = await selectAndReadInput(options);
+  inputs.forEach(({ inputFile, rawData }) => {
+    console.log('----');
+    log('main', `Parsing ${chalk.blue.bold(inputFile)} data of size ${formatNumber(rawData.length)} bytes`);
+    const records = parse(rawData);
+
+    const kml = applyTransformers(records);
+
+    // Output file shares the same name with its corresponding input
+    writeOutput(options.output, inputFile, kml);
   });
 
-  log('main', `Parsing data of size ${formatNumber(rawData.length)} bytes`);
-  const records = parse(rawData);
-  printSample(records);
-
-  const kml = applyTransformers(records);
-
-  const outputFile = path.resolve(__dirname, OUTPUT_DIRECTORY, OUTPUT_FILE);
-  log('main', `Writing transformed KML (${formatNumber(kml.length)} bytes) to ${chalk.green.bold(outputFile)}`);
-  try {
-    fs.mkdirSync(path.resolve(__dirname, OUTPUT_DIRECTORY));
-  } catch (_) {
-  }
-  fs.writeFileSync(outputFile, kml);
-
-  log('main', 'Done');
+  console.log(`----\n${chalk.green.bold('Done')}`);
 }
 
 function applyTransformers(dataset) {
@@ -61,7 +55,7 @@ function applyTransformers(dataset) {
         const before = dataset.length;
         dataset = dataset.filter((record) => !record._markedForRemoval);
         const after = dataset.length;
-        log(transformer.name, `Removed ${formatNumber(before - after)} data points`);
+        log(transformer.name, `Removed ${formatNumber(before - after)} data points (${before} -> ${after})`);
       }
     }
 
@@ -69,22 +63,6 @@ function applyTransformers(dataset) {
     if (transformer.transform) {
       dataset = transformer.transform(dataset);
     }
-
-    printSample(dataset);
   });
   return dataset;
-}
-
-function printSample(dataset) {
-  if (Array.isArray(dataset)) {
-    const n = dataset.length;
-    if (n) {
-      const sampleIndex = Math.floor(Math.random() * n);
-      log('main', `Data with ${formatNumber(n)} data points, sample (#${sampleIndex})`, dataset[sampleIndex]);
-    } else {
-      log('main', 'Empty dataset');
-    }
-  } else {
-    log('main', `Transformed: ${dataset.slice(0, 256)} ...`);
-  }
 }
