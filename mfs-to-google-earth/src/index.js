@@ -7,7 +7,7 @@ const transformers = require('./transformers/index.js');
 const log = require('./utils/log.js');
 const formatNumber = require('./utils/format.js');
 
-const DATA_PATH = '../data/Export 2022-05-28-00-15.csv';
+const DATA_PATH = '../data/Export 2022-05-29-05-22.csv';
 
 const OUTPUT_DIRECTORY = '../output';
 const OUTPUT_FILE = 'Flight Path.kml';
