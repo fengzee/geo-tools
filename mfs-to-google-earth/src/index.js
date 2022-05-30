@@ -63,7 +63,7 @@ function applyTransformers(input) {
       if (hasRemoval) {
         const before = dataset.length;
         const datasetAfterRemoval = dataset.filter((record) => !record._markedForRemoval);
-        const after = dataset.length;
+        const after = datasetAfterRemoval.length;
         log(transformer.name, `Removed ${formatNumber(before - after)} data points (${before} -> ${after})`);
         input = { meta, dataset: datasetAfterRemoval };
       }
