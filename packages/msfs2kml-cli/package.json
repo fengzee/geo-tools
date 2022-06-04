@@ -1,6 +1,6 @@
 {
   "name": "@fengzee/msfs2kml-cli",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Tools for processing geological data.",
   "main": "src/index.js",
   "scripts": {
@@ -23,5 +23,5 @@
     "commander": "^9.3.0",
     "inquirer": "^8.2.4"
   },
-  "gitHead": "6cf60adae3f86ce1fb93813bbce72eed3c364eb7"
+  "gitHead": "af75124436024e9bfec13063ccb6ca0cb9f9f1f5"
 }
