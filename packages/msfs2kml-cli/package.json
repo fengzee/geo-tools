@@ -1,12 +1,13 @@
 {
   "name": "@fengzee/msfs2kml-cli",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Tools for processing geological data.",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js -c",
     "start:prof": "node --cpu-prof src/index.js -c",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "publish": "npm publish --access public"
   },
   "repository": {
     "type": "git",
@@ -23,5 +24,5 @@
     "commander": "^9.3.0",
     "inquirer": "^8.2.4"
   },
-  "gitHead": "af75124436024e9bfec13063ccb6ca0cb9f9f1f5"
+  "gitHead": "5c79b9120e7ce70d898de8f23987cfe8608d3280"
 }
