@@ -28,7 +28,7 @@ async function selectAndReadInput(options) {
     .filter((file) => file.endsWith('.csv'));
   if (!inputFiles.length) {
     log('io', `Input directory ${chalk.yellow.bold(inputDirectory)} is does not contain "*.csv" files`);
-    process.exit(1);
+    process.exit(0);
   }
 
   const inputInfos = inputFiles.map((inputFile) => {

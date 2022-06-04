@@ -1,0 +1,10 @@
+{
+  "name": "geo-tools",
+  "private": true,
+  "scripts": {
+    "start": "lerna run start"
+  },
+  "devDependencies": {
+    "lerna": "^5.0.0"
+  }
+}

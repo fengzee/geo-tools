@@ -1,5 +1,5 @@
 {
-  "name": "geo-tools",
+  "name": "@fengzee/msfs2kml-cli",
   "version": "1.0.0",
   "description": "Tools for processing geological data.",
   "main": "src/index.js",
@@ -19,7 +19,6 @@
   },
   "homepage": "https://github.com/fengzee/geo-tools#readme",
   "dependencies": {
-    "@maphubs/tokml": "^0.6.1",
     "chalk": "^4.0.0",
     "commander": "^9.3.0",
     "inquirer": "^8.2.4"
