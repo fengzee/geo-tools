@@ -3,8 +3,8 @@
   "private": false,
   "scripts": {
     "start": "lerna run start",
-    "publish": "lerna publish --skip-npm && lerna run publish",
-    "publish:force": "lerna publish --force-publish --skip-npm && lerna run publish"
+    "publish": "lerna publish --skip-npm && lerna run publish:public",
+    "publish:force": "lerna publish --force-publish --skip-npm && lerna run publish:public"
   },
   "devDependencies": {
     "lerna": "^5.0.0"

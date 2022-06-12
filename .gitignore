@@ -1,3 +1,7 @@
+# Flight path data and outputs
+packages/mfsf2kml-cli/data
+packages/mfsf2kml-cli/output
+
 # Logs
 logs
 *.log
